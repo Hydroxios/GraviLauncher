@@ -1,39 +1,49 @@
-<p align="center"><img src="https://i.imgur.com/a9QWW0v.png"></p>
+<p align="center"><img src="https://i.imgur.com/a9QWW0v.png" width="300"></p>
 
-## Usage
+# GraviLauncher
 
-### Create an App
+GraviLauncher is a modern, user-friendly Minecraft launcher built with Electron, Next.js, and Tailwind CSS. It provides a beautiful, glassy interface for managing and launching multiple Minecraft instances, supporting both vanilla and modded (NeoForge) versions.
 
-```
-# with npx
-$ npx create-nextron-app my-app --example with-tailwindcss
+## Features
 
-# with yarn
-$ yarn create nextron-app my-app --example with-tailwindcss
+- 🚀 **Multi-instance management**: Create, edit, and launch multiple Minecraft instances with ease.
+- 🎨 **Glassy, modern UI**: Clean, responsive interface with blurred backgrounds and smooth controls.
+- 🛠️ **Modloader support**: Easily create and launch modded Minecraft (NeoForge) or vanilla instances.
+- 👤 **Profile integration**: View and manage your Minecraft profile.
+- 🔒 **Secure authentication**: Microsoft account login support.
+- ⚡ **Fast & lightweight**: Built with Electron and Next.js for performance and cross-platform support.
 
-# with pnpm
-$ pnpm dlx create-nextron-app my-app --example with-tailwindcss
-```
+## Getting Started
 
-### Install Dependencies
+1. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn
+   # or
+   pnpm install --shamefully-hoist
+   ```
 
-```
-$ cd my-app
+2. **Build for production**
+   ```bash
+   npm run build
+   # or
+   yarn build
+   # or
+   pnpm run build
+   ```
 
-# using yarn or npm
-$ yarn (or `npm install`)
+3. **Run the app**
+   ```bash
+   npm start
+   # or
+   yarn start
+   # or
+   pnpm start
+   ```
 
-# using pnpm
-$ pnpm install --shamefully-hoist
-```
+> **Note:** For development, use `npm run dev`, `yarn dev`, or `pnpm run dev`.
 
-### Use it
+## License
 
-```
-# development mode
-$ yarn dev (or `npm run dev` or `pnpm run dev`)
-
-# production build
-$ yarn build (or `npm run build` or `pnpm run build`)
-```
-"# GraviLauncher" 
+MIT
