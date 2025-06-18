@@ -1,5 +1,3 @@
-<p align="center"><img src="https://i.imgur.com/a9QWW0v.png" width="300"></p>
-
 # GraviLauncher
 
 GraviLauncher is a modern, user-friendly Minecraft launcher built with Electron, Next.js, and Tailwind CSS. It provides a beautiful, glassy interface for managing and launching multiple Minecraft instances, supporting both vanilla and modded (NeoForge) versions.
