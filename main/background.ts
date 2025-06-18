@@ -1,26 +1,49 @@
 import path from 'path'
-import { app, ipcMain, BrowserWindow } from 'electron'
+import { app, ipcMain, BrowserWindow, dialog } from 'electron'
 import serve from "electron-serve"
 import { createWindow } from './helpers'
 import { autoUpdater } from 'electron-updater'
 import { Launch, Microsoft } from "minecraft-java-core"
 import { Instance, User } from './types'
 import { getCurrentSession, loadSession, setSession } from './sessionStorage'
-import { addInstance, getInstance, getInstances } from './instanceStorage'
+import { addInstance, getInstance, getInstances, setInstancesPath, getInstancesPath } from './instanceStorage'
 import { v4 as uuidv4 } from "uuid"
+import { loadSettings, getSettings, setInstancesPath as setSettingsInstancesPath, setMemory } from './settingsStorage'
 
 const isProd = process.env.NODE_ENV === 'production'
 
 let mainWindow: BrowserWindow | undefined
 let splashWindow: BrowserWindow | undefined
 
+const startSettings = loadSettings();
 loadSession()
+setInstancesPath(startSettings.instancesPath)
 let auth: Microsoft = new Microsoft("");
 let launcher = new Launch()
-launcher.on('progress', p => console.log(`[DL] ${p}%`))
-        .on('data', line => process.stdout.write(line))
-        .on("error", console.error)
-        .on('close', () => console.log('Game exited.'));
+launcher.on('progress', p => {
+  console.log(`[DL] ${p}%`)
+  if (mainWindow) mainWindow.webContents.send('launch-progress', { type: 'progress', value: p })
+})
+  .on('data', line => {
+    process.stdout.write(line)
+    if (mainWindow) mainWindow.webContents.send("launch-progress", {type: "playing"})
+  })
+  .on("extract", (extract) => {
+    console.log(`[EXTRACTING] ${extract}`)
+    if (mainWindow) mainWindow.webContents.send('launch-progress', { type: 'extract', value: extract })
+  })
+  .on("patch", (patch) => {
+    console.log(`[PATCH] ${patch}`)
+    if (mainWindow) mainWindow.webContents.send('launch-progress', { type: 'patch', value: patch })
+  })
+  .on("error", err => {
+    console.error(err)
+    if (mainWindow) mainWindow.webContents.send('launch-progress', { type: 'error', value: err?.message || String(err) })
+  })
+  .on('close', () => {
+    console.log('Game exited.')
+    if (mainWindow) mainWindow.webContents.send('launch-progress', { type: 'close' })
+  });
 
 if (isProd) {
   serve({ directory: 'app' })
@@ -99,6 +122,9 @@ app.on('window-all-closed', () => {
 ipcMain.on("login", async (event, arg) => {
   const u = getCurrentSession()
   if(u){
+    console.log("Refresing user session...")
+    const refreshedUser = await auth.refresh(u)
+    setSession(refreshedUser as User)
     event.reply("user", u)
     return;
   }
@@ -125,30 +151,30 @@ ipcMain.on("launch-instance", async (event, id: string) => {
   const instance = getInstance(id)
   if(instance){
     console.log("launching " + id)
+    if (mainWindow) mainWindow.webContents.send('launch-progress', { type: 'start', instance })
     try {
+      const settings = getSettings();
+      const basePath = settings?.instancesPath || getInstancesPath();
       await launcher.Launch({
-        path: `./instances/${id}`, 
+        path: `${basePath}/${id}`,
         authenticator: getCurrentSession(),
         version: instance.version,
         memory: {
-          min: "4G",
-          max: "8G"
+          min: settings?.memoryMin + "G" || "4G",
+          max: settings?.memoryMax + "G" || "8G"
         },
         java: {
           type: "jre"
         },
         GAME_ARGS: [],
-        JVM_ARGS: [
-          "-XX:+UseShenandoahGC",
-          "-XX:+AlwaysPreTouch"
-        ],
+        JVM_ARGS: [],
         ignored: [],
         loader: {
-          path: `./instances/${id}/loader`,               // Where to install loaders
-          type: instance.modloader ?? "",                     // forge | neoforge | fabric | …
-          build: instance.modloaderVersion ?? "",                // Build number / tag
-          enable: instance.modloader ? true : false,                  // Whether to install the loader
-        },    
+          path: `/loader`,
+          type: instance.modloader ?? "",
+          build: instance.modloaderVersion ?? "",
+          enable: instance.modloader ? true : false,
+        },
         mcp: null,
         screen: {
           fullscreen: false,
@@ -160,6 +186,22 @@ ipcMain.on("launch-instance", async (event, id: string) => {
     } catch(err) {
       console.error(err)
     }
-    
   }
+})
+
+ipcMain.handle('open-folder-dialog', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory']
+  });
+  if (result.canceled || !result.filePaths.length) return null;
+  return result.filePaths[0];
+});
+
+ipcMain.on("save-settings", (event, settings) => {
+  setInstancesPath(settings.instanceFolder)
+  setMemory(settings.memory.min, settings.memory.max)
+})
+
+ipcMain.on("settings", (event, arg) => {
+  event.reply("settings", getSettings())
 })

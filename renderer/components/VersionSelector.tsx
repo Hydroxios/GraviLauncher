@@ -61,7 +61,7 @@ export default function VersionSelector({
                 } else {
                   list = data.versions; // doit déjà être un string[]
                 }
-        
+
                 setVersions(list);
                 setSelected(list[0]);
                 onChange?.(list[0]);
@@ -70,6 +70,7 @@ export default function VersionSelector({
         case "neoforge":
           let list = await fetchNeoForgeVersions()
           list = list.filter((v) => v.startsWith(vanillaVersion.substring(2)))
+          list = list.reverse()
           setVersions(list)
           setSelected(list[0])
           onChange?.(list[0]);

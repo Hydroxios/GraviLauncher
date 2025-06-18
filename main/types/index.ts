@@ -11,3 +11,9 @@ export interface Instance {
     modloader?: string
     modloaderVersion?: string
 }
+
+export interface Settings {
+    instancesPath: string;
+    memoryMin: string;
+    memoryMax: string;
+}

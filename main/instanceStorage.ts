@@ -1,20 +1,32 @@
 import { Instance } from "./types";
 import fs from "node:fs"
 
+let instancesPath = "./instances";
+
+export const setInstancesPath = (path: string) => {
+    instancesPath = path;
+}
+export const getInstancesPath = () => instancesPath;
+
 export const getInstances = () :Instance[] => {
-    if(!fs.existsSync("./instances")){
-        fs.mkdirSync("./instances")
-        fs.writeFileSync("./instances/manifest.json", JSON.stringify([]))
+    if(!fs.existsSync(instancesPath)){
+        fs.mkdirSync(instancesPath, { recursive: true })
+        fs.writeFileSync(`${instancesPath}/manifest.json`, JSON.stringify([]))
         return []
     }
-    const instances = JSON.parse(fs.readFileSync("./instances/manifest.json").toString()) as Instance[]
+
+    if(!fs.existsSync(`${instancesPath}/manifest.json`)){
+        fs.writeFileSync(`${instancesPath}/manifest.json`, JSON.stringify([]))
+    }
+
+    const instances = JSON.parse(fs.readFileSync(`${instancesPath}/manifest.json`).toString()) as Instance[]
     return instances;
 }
 
 export const addInstance = (instance: Instance) => {
     const instances = getInstances()
     const nI = [...instances, instance]
-    fs.writeFileSync("./instances/manifest.json", JSON.stringify(nI))
+    fs.writeFileSync(`${instancesPath}/manifest.json`, JSON.stringify(nI))
 }
 
 export const getInstance = (id: string) => {
