@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[url(/images/background.jpg)] bg-cover bg-fixed text-white ;
+    backdrop-filter: blur(6px);
+  }
+}
+
+@theme {
+}
+
+.inset {
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.25); 
+}
+
+.draggable {
+  -webkit-app-region: drag;
+}
+
+.no-draggable {
+  -webkit-app-region: no-drag;
+} 
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  animation: spinner-y0fdc1 3s infinite ease;
+  transform-style: preserve-3d;
+ }
+ 
+ .spinner > div {
+  background-color: rgba(255, 123, 0, 0.2);
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  border: 2px solid #ff7b00;
+ }
+ 
+ .spinner div:nth-of-type(1) {
+  transform: translateZ(-22px) rotateY(180deg);
+ }
+ 
+ .spinner div:nth-of-type(2) {
+  transform: rotateY(-270deg) translateX(50%);
+  transform-origin: top right;
+ }
+ 
+ .spinner div:nth-of-type(3) {
+  transform: rotateY(270deg) translateX(-50%);
+  transform-origin: center left;
+ }
+ 
+ .spinner div:nth-of-type(4) {
+  transform: rotateX(90deg) translateY(-50%);
+  transform-origin: top center;
+ }
+ 
+ .spinner div:nth-of-type(5) {
+  transform: rotateX(-90deg) translateY(50%);
+  transform-origin: bottom center;
+ }
+ 
+ .spinner div:nth-of-type(6) {
+  transform: translateZ(22px);
+ }
+ 
+ @keyframes spinner-y0fdc1 {
+  0% {
+   transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+  }
+ 
+  50% {
+   transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
+  }
+ 
+  100% {
+   transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
+  }
+ }
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* track */
+::-webkit-scrollbar-track {
+  background: rgba(128, 128, 128, 0.1); /* Gray with some transparency */
+  border-radius: 5px;
+}
+
+/* handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.4); /* Darker gray with more transparency */
+  border-radius: 5px;
+  backdrop-filter: blur(10px); /* Glassy effect */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Light border for glassy effect */
+}
+
+/* handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.6);
+}
